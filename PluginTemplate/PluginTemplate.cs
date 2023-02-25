@@ -1,5 +1,6 @@
 ﻿using TerrariaApi.Server;
 using Terraria;
+using System.Timers;
 
 namespace PluginTemplate;
 
@@ -12,7 +13,7 @@ public class PluginTemplate : TerrariaPlugin
     /// <summary>
     /// The name of the plugin.
     /// </summary>
-    public override string Name => "Template Plugin";
+    public override string Name => "Simple Settle Plugin";
 
     /// <summary>
     /// The version of the plugin in its current state.
@@ -22,13 +23,14 @@ public class PluginTemplate : TerrariaPlugin
     /// <summary>
     /// The author(s) of the plugin.
     /// </summary>
-    public override string Author => "Ijwu";
+    public override string Author => "Donut313";
 
     /// <summary>
     /// A short, one-line, description of the plugin's purpose.
     /// </summary>
-    public override string Description => "A simple, senseless, plugin used to demonstrate the code structure of a TShock and TS-API plugin.";
-
+    public override string Description => "a simple plugin that settles all the liquid on the server every 5 minutes";
+// timer variable
+public static Timer aTimer;
     /// <summary>
     /// The plugin's constructor
     /// Set your plugin's order (optional) and any other constructor logic here
@@ -44,9 +46,13 @@ public class PluginTemplate : TerrariaPlugin
     /// </summary>
     public override void Initialize()
     {
-        throw new NotImplementedException();
+        ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
     }
-        
+    // boot up timer
+        private void OnUpdate(EventArgs args)
+        {
+SetTimer();
+        }
     /// <summary>
     /// Performs plugin cleanup logic
     /// Remove your hooks and perform general cleanup here
@@ -61,4 +67,19 @@ public class PluginTemplate : TerrariaPlugin
         }
         base.Dispose(disposing);
     }
+    // create timer for the liquid
+    private static void SetTimer()
+        {
+            aTimer = new Timer(300000.0);
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+                private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            // settle liquid
+Liquid.StartPanic();
+// show message
+TShock.Utils.Broadcast("Settling liquids.", 252, 211, 7);
+        }
 }
