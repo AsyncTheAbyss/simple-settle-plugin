@@ -1,6 +1,7 @@
 ﻿using TerrariaApi.Server;
 using Terraria;
 using System.Timers;
+using TShockAPI;
 
 namespace PluginTemplate;
 
@@ -30,7 +31,7 @@ public class PluginTemplate : TerrariaPlugin
     /// </summary>
     public override string Description => "a simple plugin that settles all the liquid on the server every 5 minutes";
 // timer variable
-public static Timer aTimer;
+public static System.Timers.Timer aTimer;
     /// <summary>
     /// The plugin's constructor
     /// Set your plugin's order (optional) and any other constructor logic here
@@ -70,7 +71,7 @@ SetTimer();
     // create timer for the liquid
     private static void SetTimer()
         {
-            aTimer = new Timer(300000.0);
+            aTimer = new System.Timers.Timer(300000.0);
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;
