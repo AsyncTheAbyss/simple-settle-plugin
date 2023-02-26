@@ -38,7 +38,6 @@ public static System.Timers.Timer aTimer;
     /// </summary>
     public PluginTemplate(Main game) : base(game)
     {
-
     }
 
     /// <summary>
@@ -47,13 +46,14 @@ public static System.Timers.Timer aTimer;
     /// </summary>
     public override void Initialize()
     {
-        ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
+        ServerApi.Hooks.GamePostInitialize.Register(this, loaduptimer);
     }
     // boot up timer
-        private void OnUpdate(EventArgs args)
-        {
-SetTimer();
-        }
+
+    private void loaduptimer(EventArgs args)
+    {
+        SetTimer();
+    }
     /// <summary>
     /// Performs plugin cleanup logic
     /// Remove your hooks and perform general cleanup here
@@ -78,9 +78,9 @@ SetTimer();
         }
                 private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            // settle liquid
-Liquid.StartPanic();
-// show message
-TShock.Utils.Broadcast("Settling liquids.", 252, 211, 7);
-        }
+        // settle liquid
+        Liquid.StartPanic();
+        // show message
+        TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+    }
 }
