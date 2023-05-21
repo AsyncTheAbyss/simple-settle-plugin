@@ -81,30 +81,37 @@ public static System.Timers.Timer aTimer;
         {
         
 
-
+        
         // check if a player is active
 
         if (TShock.Players[0].Active)
         {
-
-            // settle liquid
-            Liquid.StartPanic();
-            // show message
-            TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
-            // set the bool to false because someone is active on the server
-            hassettledwithnooneon = false;
+            // check if there is literally anything to settle
+            if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 100)
+            {
+                // settle liquid
+                Liquid.StartPanic();
+                // show message
+                TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+                // set the bool to false because someone is active on the server
+                hassettledwithnooneon = false;
+            }
         }
         else
         {
             // check if it has settled with no one on the server
             if (!hassettledwithnooneon)
             {
-                // settle liquid
-                Liquid.StartPanic();
-                // show message
-                TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
-                // set the bool to true now that liquids have been settled with no one on the server
-                hassettledwithnooneon = true;
+                // check if there is literally anything to settle
+                if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 100)
+                {
+                    // settle liquid
+                    Liquid.StartPanic();
+                    // show message
+                    TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+                    // set the bool to true now that liquids have been settled with no one on the server
+                    hassettledwithnooneon = true;
+                }
             }
         }
     }
