@@ -1,4 +1,4 @@
-﻿using TerrariaApi.Server;
+using TerrariaApi.Server;
 using Terraria;
 using System.Timers;
 using TShockAPI;
@@ -69,6 +69,7 @@ public static System.Timers.Timer aTimer;
         base.Dispose(disposing);
     }
     // create timer for the liquid
+    private static bool hassettledwithnooneon = false;
     private static void SetTimer()
         {
             aTimer = new System.Timers.Timer(300000.0);
@@ -78,9 +79,33 @@ public static System.Timers.Timer aTimer;
         }
                 private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-        // settle liquid
-        Liquid.StartPanic();
-        // show message
-        TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+        
+
+
+        // check if a player is active
+
+        if (TShock.Players[0].Active)
+        {
+
+            // settle liquid
+            Liquid.StartPanic();
+            // show message
+            TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+            // set the bool to false because someone is active on the server
+            hassettledwithnooneon = false;
+        }
+        else
+        {
+            // check if it has settled with no one on the server
+            if (!hassettledwithnooneon)
+            {
+                // settle liquid
+                Liquid.StartPanic();
+                // show message
+                TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids.");
+                // set the bool to true now that liquids have been settled with no one on the server
+                hassettledwithnooneon = true;
+            }
+        }
     }
 }
