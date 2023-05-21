@@ -53,6 +53,7 @@ public static System.Timers.Timer aTimer;
     private void loaduptimer(EventArgs args)
     {
         SetTimer();
+        SetTimer2();
     }
     /// <summary>
     /// Performs plugin cleanup logic
