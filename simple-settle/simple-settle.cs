@@ -72,25 +72,26 @@ public static System.Timers.Timer aTimer;
     // create timer for the liquid
     private static bool hassettledwithnooneon = false;
     private static bool hasdonehighsettle = false;
+    public static int didliquids = 0;
     private static void SetTimer2()
     {
         aTimer = new System.Timers.Timer(5000.0);
         aTimer.Elapsed += OnTimedEvent2;
         aTimer.AutoReset = true;
         aTimer.Enabled = true;
+        didliquids++;
     }
     private static void OnTimedEvent2(object source, ElapsedEventArgs e)
     {
-        if (!hasdonehighsettle)
+        if (didliquids < 5)
         {
             if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 10000)
             {
-                hasdonehighsettle = true;
+                didliquids = 0;
                 // settle liquid
                 Liquid.StartPanic();
                 // show message
                 TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids due to high amount of liquids.");
-                hasdonehighsettle = false;
             }
         }
         }
