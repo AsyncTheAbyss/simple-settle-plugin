@@ -2,6 +2,7 @@ using TerrariaApi.Server;
 using Terraria;
 using System.Timers;
 using TShockAPI;
+using System.Threading.Tasks;
 
 namespace PluginTemplate;
 
@@ -72,26 +73,28 @@ public static System.Timers.Timer aTimer;
     // create timer for the liquid
     private static bool hassettledwithnooneon = false;
     private static bool hasdonehighsettle = false;
-    public static int didliquids = 0;
+    public static bool didliquids = false;
     private static void SetTimer2()
     {
         aTimer = new System.Timers.Timer(5000.0);
         aTimer.Elapsed += OnTimedEvent2;
         aTimer.AutoReset = true;
         aTimer.Enabled = true;
-        didliquids++;
-    }
-    private static void OnTimedEvent2(object source, ElapsedEventArgs e)
+        }
+    private static async void OnTimedEvent2(object source, ElapsedEventArgs e)
     {
-        if (didliquids < 5)
+        if (!didliquids)
         {
             if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 10000)
             {
-                didliquids = 0;
+                didliquids = true;
                 // settle liquid
                 Liquid.StartPanic();
                 // show message
                 TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids due to high amount of liquids.");
+                // wait 5 seconds
+                await Task.Delay(5000);
+                didliquids = false;
             }
         }
         }
