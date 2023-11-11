@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simple-settle", "simple-settle\simple-settle.csproj", "{C9110ACD-9CEF-492D-8DE0-B4FCDDE79C62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSettle", "SimpleSettle\SimpleSettle.csproj", "{C9110ACD-9CEF-492D-8DE0-B4FCDDE79C62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
