@@ -4,13 +4,13 @@ using System.Timers;
 using TShockAPI;
 using System.Threading.Tasks;
 
-namespace PluginTemplate;
+namespace SimpleSettle;
 
 /// <summary>
 /// The main plugin class should always be decorated with an ApiVersion attribute. The current API Version is 2.1
 /// </summary>
 [ApiVersion(2, 1)]
-public class PluginTemplate : TerrariaPlugin
+public class SimpleSettle : TerrariaPlugin
 {
     /// <summary>
     /// The name of the plugin.
@@ -31,13 +31,16 @@ public class PluginTemplate : TerrariaPlugin
     /// A short, one-line, description of the plugin's purpose.
     /// </summary>
     public override string Description => "a simple plugin that settles all the liquid on the server every 5 minutes";
-// timer variable
-public static System.Timers.Timer aTimer;
+
+    // timer variables
+    private System.Threading.Timer liquidTimer;
+    private System.Threading.Timer highLiquidTimer;
+
     /// <summary>
     /// The plugin's constructor
     /// Set your plugin's order (optional) and any other constructor logic here
     /// </summary>
-    public PluginTemplate(Main game) : base(game)
+    public SimpleSettle(Main game) : base(game)
     {
     }
 
@@ -47,15 +50,9 @@ public static System.Timers.Timer aTimer;
     /// </summary>
     public override void Initialize()
     {
-        ServerApi.Hooks.GamePostInitialize.Register(this, loaduptimer);
+        ServerApi.Hooks.GamePostInitialize.Register(this, LoadUpTimer);
     }
-    // boot up timer
 
-    private void loaduptimer(EventArgs args)
-    {
-        SetTimer();
-        SetTimer2();
-    }
     /// <summary>
     /// Performs plugin cleanup logic
     /// Remove your hooks and perform general cleanup here
@@ -64,58 +61,42 @@ public static System.Timers.Timer aTimer;
     {
         if (disposing)
         {
-            //unhook
-            //dispose child objects
-            //set large objects to null
+            // unhook
+            ServerApi.Hooks.GamePostInitialize.Deregister(this, LoadUpTimer);
+            // dispose child objects
+            liquidTimer.Dispose();
+            highLiquidTimer.Dispose();
+            // set large objects to null
+            liquidTimer = null;
+            highLiquidTimer = null;
         }
         base.Dispose(disposing);
     }
+
     // create timer for the liquid
     private static bool hassettledwithnooneon = false;
-    private static bool hasdonehighsettle = false;
     public static bool didliquids = false;
-    private static void SetTimer2()
-    {
-        aTimer = new System.Timers.Timer(5000.0);
-        aTimer.Elapsed += OnTimedEvent2;
-        aTimer.AutoReset = true;
-        aTimer.Enabled = true;
-        }
-    private static async void OnTimedEvent2(object source, ElapsedEventArgs e)
-    {
-        if (!didliquids)
-        {
-            if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 10000)
-            {
-                didliquids = true;
-                // settle liquid
-                Liquid.StartPanic();
-                // show message
-                TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids due to high amount of liquids.");
-                // wait 5 seconds
-                await Task.Delay(5000);
-                didliquids = false;
-            }
-        }
-        }
-        private static void SetTimer()
-        {
-            aTimer = new System.Timers.Timer(300000.0);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
-        }
-                private static void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-        
 
-        
+    private void SetLiquidTimer()
+    {
+        liquidTimer = new System.Threading.Timer(SettleLiquids, null, 300000, 300000);
+    }
+
+    private void SetHighLiquidTimer()
+    {
+        highLiquidTimer = new System.Threading.Timer(SettleLiquidsHigh, null, 30000, 30000);
+    }
+
+    private void SettleLiquids(object state)
+    {
+        // calculate liquid count
+        int liquidCount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
+
         // check if a player is active
-
         if (TShock.Players[0].Active)
         {
             // check if there is literally anything to settle
-            if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 100)
+            if (liquidCount > 100)
             {
                 // settle liquid
                 Liquid.StartPanic();
@@ -131,7 +112,7 @@ public static System.Timers.Timer aTimer;
             if (!hassettledwithnooneon)
             {
                 // check if there is literally anything to settle
-                if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > 100)
+                if (liquidCount > 100)
                 {
                     // settle liquid
                     Liquid.StartPanic();
@@ -142,5 +123,24 @@ public static System.Timers.Timer aTimer;
                 }
             }
         }
+    }
+
+    private void SettleLiquidsHigh(object state)
+    {
+        // calculate liquid count
+        int liquidCount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
+            if (liquidCount > 10000)
+            {
+                // settle liquid
+                Liquid.StartPanic();
+                // show message
+                TShockAPI.TSPlayer.All.SendInfoMessage("Settling liquids due to high amount of liquids.");
+            }
+    }
+
+    private void LoadUpTimer(EventArgs args)
+    {
+        SetLiquidTimer();
+        SetHighLiquidTimer();
     }
 }
