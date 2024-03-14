@@ -22,7 +22,8 @@ public class ConfigManager {
     {
         File.WriteAllText(SimpleSettle.path,JsonConvert.SerializeObject(this,Formatting.Indented));
     }
-    public ConfigManager read() {
+    public ConfigManager read()
+    {
         // check if our config does not exist
         if (!File.Exists(SimpleSettle.path))
         {
@@ -40,18 +41,15 @@ public class SimpleSettle : TerrariaPlugin
     /// <summary>
     /// The name of the plugin.
     /// </summary>
-    public override string Name => "Simple Settle Plugin";
-
+    public override string Name => "Simple Settle";
     /// <summary>
     /// The version of the plugin in its current state.
     /// </summary>
-    public override Version Version => new Version(1, 0, 0);
-
+    public override Version Version => new Version(1, 0, 1);
     /// <summary>
     /// The author(s) of the plugin.
     /// </summary>
     public override string Author => "Async Void";
-
     /// <summary>
     /// A short, one-line, description of the plugin's purpose.
     /// </summary>
@@ -62,7 +60,6 @@ public class SimpleSettle : TerrariaPlugin
     // timer variables
     private System.Threading.Timer liquidTimer;
     private System.Threading.Timer highLiquidTimer;
-
     /// <summary>
     /// The plugin's constructor
     /// Set your plugin's order (optional) and any other constructor logic here
@@ -70,7 +67,6 @@ public class SimpleSettle : TerrariaPlugin
     public SimpleSettle(Main game) : base(game)
     {
     }
-
     /// <summary>
     /// Performs plugin initialization logic.
     /// Add your hooks, config file read/writes, etc here
@@ -114,26 +110,22 @@ public class SimpleSettle : TerrariaPlugin
         }
         base.Dispose(disposing);
     }
-
     // create timer for the liquid
     private static bool HasSettledWithNoneOn = false;
     private void LiquidTimer()
     {
         liquidTimer = new System.Threading.Timer(SettleLiquids, null, 1000 * config.SettleTime, 1000 * config.SettleTime);
     }
-
     private void HighLiquidTimer()
     {
         highLiquidTimer = new System.Threading.Timer(SettleLiquidsHigh, null, 30000, 30000);
     }
-
     private void SettleLiquids(object state)
     {
         // calculate liquid count
         int liquidCount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-
         // check if a player is active
-        if (TShock.Players[0].Active)
+        if (TShock.Players[0] == null)
         {
             // set the bool to false because someone is active on the server
             HasSettledWithNoneOn = false;
@@ -156,12 +148,8 @@ public class SimpleSettle : TerrariaPlugin
                 {
                     Console.WriteLine(config.SettleMessage);
                 }
-                
             }
-        
-                    
     }
-
     private void SettleLiquidsHigh(object state)
     {
         // calculate liquid count
@@ -181,7 +169,6 @@ public class SimpleSettle : TerrariaPlugin
                 }
             }
     }
-
     private void LoadUpTimers(EventArgs args)
     {
         LiquidTimer();
