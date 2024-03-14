@@ -14,10 +14,10 @@ public class ConfigManager {
     public bool Message = false;
     public bool MessageOnlyInConsole = true;
     public bool MaxSettle = true;
-    public int MaxSetttleAmount = 10000;
+    public int MaxSettleAmount = 10000;
     public int SettleTime = 300;
-    public string settlemessage = "Settling liquids.";
-    public string settlehighmessage = "Settling liquids due to high amount of liquids.";
+    public string SettleMessage = "Settling liquids.";
+    public string SettleHighMessage = "Settling liquids due to high amount of liquids.";
     public void write()
     {
         File.WriteAllText(SimpleSettle.path,JsonConvert.SerializeObject(this,Formatting.Indented));
@@ -50,7 +50,7 @@ public class SimpleSettle : TerrariaPlugin
     /// <summary>
     /// The author(s) of the plugin.
     /// </summary>
-    public override string Author => "Donut313";
+    public override string Author => "Async Void";
 
     /// <summary>
     /// A short, one-line, description of the plugin's purpose.
@@ -93,10 +93,10 @@ public class SimpleSettle : TerrariaPlugin
             config.write();
         // restart the timers to apply altered time
         DestroyTimers();
-        SetLiquidTimer();
+        LiquidTimer();
         if (config.MaxSettle)
         {
-        SetHighLiquidTimer();
+        HighLiquidTimer();
         }
     }
     /// <summary>
@@ -117,12 +117,12 @@ public class SimpleSettle : TerrariaPlugin
 
     // create timer for the liquid
     private static bool HasSettledWithNoneOn = false;
-    private void SetLiquidTimer()
+    private void LiquidTimer()
     {
         liquidTimer = new System.Threading.Timer(SettleLiquids, null, 1000 * config.SettleTime, 1000 * config.SettleTime);
     }
 
-    private void SetHighLiquidTimer()
+    private void HighLiquidTimer()
     {
         highLiquidTimer = new System.Threading.Timer(SettleLiquidsHigh, null, 30000, 30000);
     }
@@ -150,11 +150,11 @@ public class SimpleSettle : TerrariaPlugin
                 // show message
                 if (config.Message && !config.MessageOnlyInConsole)
                 {
-                TShockAPI.TSPlayer.All.SendInfoMessage(config.settlemessage);
+                TShockAPI.TSPlayer.All.SendInfoMessage(config.SettleMessage);
                 }
                 if (config.MessageOnlyInConsole)
                 {
-                    Console.WriteLine(config.settlemessage);
+                    Console.WriteLine(config.SettleMessage);
                 }
                 
             }
@@ -165,36 +165,34 @@ public class SimpleSettle : TerrariaPlugin
     private void SettleLiquidsHigh(object state)
     {
         // calculate liquid count
-        int liquidCount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-            if (liquidCount > config.MaxSetttleAmount)
+        int LiquidCount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
+            if (LiquidCount > config.MaxSettleAmount)
             {
                 // settle liquid
                 Liquid.StartPanic();
                 // show message
                 if (config.Message && !config.MessageOnlyInConsole)
                 {
-                TShockAPI.TSPlayer.All.SendInfoMessage(config.settlehighmessage);
+                TShockAPI.TSPlayer.All.SendInfoMessage(config.SettleHighMessage);
                 }
                 if (config.MessageOnlyInConsole)
                 {
-                Console.WriteLine(config.settlehighmessage);
+                Console.WriteLine(config.SettleHighMessage);
                 }
             }
     }
 
     private void LoadUpTimers(EventArgs args)
     {
-        SetLiquidTimer();
+        LiquidTimer();
         if (config.MaxSettle)
         {
-        SetHighLiquidTimer();
+        HighLiquidTimer();
         }
     }
     private void DestroyTimers()
     {
         liquidTimer.Dispose();
         highLiquidTimer.Dispose();
-        liquidTimer = null;
-        highLiquidTimer = null;
     }
 }
