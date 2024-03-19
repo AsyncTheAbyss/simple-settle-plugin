@@ -1,16 +1,13 @@
-# Simple Settle Plugin
+# Simple Settle
 A tshock plugin that will settle liquids after a specified amount of time in the config. This plugin will also settle the liquids if there is a high amount of them.
 
-# Configuration creation and where to find
-After running the plugin for the first time a config file will be created under the server directory, in tshock and callled SimpleSettle.json. 
+### Where to find configuration
+run the plugin for the first time to create the config file.  
+under the server directory, in /tshock/SimpleSettle.json. 
 
-# Configuration info
-Message means if it will show the message to all players or not.
-
-MessageOnlyInConsole if this is turned on it will override the Message option in the config and will only show the message in the console.
-
-MaxSettle will toggle the settling if the liquids are high or not.
-
-MaxSetttleAmount is the cap at which the high liquid settling will occur at.
-
-SettleTime is how often the settle timer will go off in seconds. (not including the high liquid settle)
+### Configuration info
+**Message**, shows the message to chat or not.  
+**MessageOnlyInConsole**, overrides the message option and will only show the message in the console.  
+**MaxSettle**, toggles the settling of the liquids if there is a high amount of them. (separate from the main settle timer)  
+**MaxSetttleAmount**, the cap at which the high liquid settling will occur at.  
+**SettleTime**, how often the settle timer will go off in seconds. (not including the high liquid settle)  
